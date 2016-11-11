@@ -1,9 +1,7 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Main {
 
@@ -15,10 +13,26 @@ public class Main {
         String url = "jdbc:postgresql://localhost:5432/restaurant";
         String user = "user";
         String password = "123456";
-        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+        try (Connection connection = DriverManager.getConnection(url, user, password);
+             Statement statement = connection.createStatement()) {
+
+            String sql = "SELECT * FROM DISHES";
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            while (resultSet.next()) {
+                Dishes dishes = new Dishes();
+
+                dishes.setId(resultSet.getInt("ID"));
+                dishes.setName(resultSet.getString("NAME"));
+                dishes.setWeight(resultSet.getInt("WEIGHT"));
+                dishes.setPrice(resultSet.getInt("PRICE"));
+
+                System.out.println(dishes.toString());
+            }
+
             LOGGER.info("Successfully connect to DB");
         } catch (SQLException e) {
-            LOGGER.error("Exeption occured while to DB" + url, e);
+            LOGGER.error("Exception occurred while to DB" + url, e);
         }
 
     }
