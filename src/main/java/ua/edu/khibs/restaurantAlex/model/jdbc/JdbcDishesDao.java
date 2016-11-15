@@ -9,28 +9,34 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 public class JdbcDishesDao implements DishesDao {
 
     private DataSource dataSource;
 
-//   private static Logger LOGGER = LoggerFactory.getLogger(DishesDao.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DishesDao.class);
 
     @Override
-    public Dishes load(int id) {
-        String url = "jdbc:postgresql://localhost:5432/restaurant";
-        String user = "user";
-        String password = "123456";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement  = connection.prepareStatement("SELECT * FROM DISHES WHERE ID=?")) {
+    public Dishes addDishes(String name, int weight, int price) {
 
-            statement.setInt(1, id);
+        return null;
+    }
+
+    @Override
+    public Dishes removeDishes(String name) {
+        return null;
+    }
+
+    @Override
+    public Dishes findDishes(String name) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM DISHES WHERE name =?")) {
+            statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return createdishes(resultSet);
             } else {
-                throw new RuntimeException("Cannot find dishes with " + id);
+                throw new RuntimeException("Cannot find dishes with " + name);
             }
         } catch (SQLException e) {
             //           LOGGER.error("Exception occurred while to DB", e);
@@ -40,17 +46,11 @@ public class JdbcDishesDao implements DishesDao {
 
     @Override
     public List<Dishes> getAll() {
-        String url = "jdbc:postgresql://localhost:5432/restaurant";
-        String user = "user";
-        String password = "123456";
-
         List<Dishes> result = new ArrayList<>();
 
-        try (Connection connection = DriverManager.getConnection(url, user, password);
+        try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-
             ResultSet resultSet = statement.executeQuery("SELECT * FROM DISHES");
-
             while (resultSet.next()) {
                 Dishes dishes = createdishes(resultSet);
                 result.add(dishes);
@@ -64,14 +64,11 @@ public class JdbcDishesDao implements DishesDao {
 
     private Dishes createdishes(ResultSet resultSet) throws SQLException {
         Dishes dishes = new Dishes();
-        dishes.setId(resultSet.getInt("ID"));
         dishes.setName(resultSet.getString("NAME"));
         dishes.setWeight(resultSet.getInt("WEIGHT"));
         dishes.setPrice(resultSet.getInt("PRICE"));
         return dishes;
     }
-
-
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
