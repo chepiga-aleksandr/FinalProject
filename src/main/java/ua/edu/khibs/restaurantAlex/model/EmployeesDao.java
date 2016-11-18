@@ -6,7 +6,7 @@ public interface EmployeesDao {
 
     Employees addEmployee(String name);
 
-    void remove(String name);
+    void removeEmployee(String name);
 
     Employees findEmployeeByName(String name);
 

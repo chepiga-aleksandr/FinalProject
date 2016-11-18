@@ -20,9 +20,13 @@ public class JdbcEmployeesDao implements EmployeesDao {
     public Employees addEmployee(String name) {
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO employees (name) VALUES (?)")) {
-            statement.setString(1, name);
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO employees (id, name) VALUES (?,?)")) {
+
+            int id = getMaxId() + 1;
+            statement.setInt(1, id);
+            statement.setString(2, name);
             ResultSet resultSet = statement.executeQuery();
+
             if (resultSet.next()) {
                 return createEmployee(resultSet);
             } else {
@@ -34,7 +38,7 @@ public class JdbcEmployeesDao implements EmployeesDao {
     }
 
     @Override
-    public void remove(String name) {
+    public void removeEmployee(String name) {
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement("DELETE FROM employees WHERE name = ?")) {
@@ -85,7 +89,7 @@ public class JdbcEmployeesDao implements EmployeesDao {
 
     private Employees createEmployee(ResultSet resultSet) throws SQLException {
         Employees employees = new Employees();
-        //       employees.setId(resultSet.getInt("ID"));
+        employees.setId(resultSet.getInt("ID"));
         employees.setName(resultSet.getString("NAME"));
         return employees;
     }

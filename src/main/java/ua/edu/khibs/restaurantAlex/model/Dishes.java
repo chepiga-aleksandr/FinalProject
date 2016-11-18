@@ -23,14 +23,8 @@ public class Dishes {
         this.weight = weight;
         this.price = price;
     }
-
     public Dishes() {
-
     }
-
-//    public Dishes () {
-//
-//    }
 
     public int getId() {
         return id;

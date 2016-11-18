@@ -25,56 +25,65 @@ public class JdbcDishesDao implements DishesDao {
             statement.setInt(2, dishes.getWeight());
             statement.setInt(3, dishes.getPrice());
 
-//            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
 
-//           if (resultSet.next()) {
-//                return dishes;
-//            } else {
-//                throw new RuntimeException("Не смог добавить блюдо ");
-//            }
+            if (resultSet.next()) {
+                return dishes;
+            } else {
+                throw new RuntimeException("Не смог добавить блюдо ");
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return dishes;
     }
-        @Override
-        public void removeDishes (String name){
-        }
 
-        @Override
-        public Dishes findDishesByName (String name){
-            try (Connection connection = dataSource.getConnection();
-                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM DISHES WHERE name =?")) {
-                statement.setString(1, name);
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) {
-                    return createdishes(resultSet);
-                } else {
-                    throw new RuntimeException("Cannot findEmployeeByName dishes with " + name);
-                }
-            } catch (SQLException e) {
-                //           LOGGER.error("Exception occurred while to DB", e);
-                throw new RuntimeException(e);
+    @Override
+    public void removeDishes(String name) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("DELETE FROM dishes WHERE name = ?")) {
+            statement.setString(1, name);
+
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Dishes findDishesByName(String name) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM DISHES WHERE name =?")) {
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return createdishes(resultSet);
+            } else {
+                throw new RuntimeException("Cannot findEmployeeByName dishes with " + name);
             }
+        } catch (SQLException e) {
+            //           LOGGER.error("Exception occurred while to DB", e);
+            throw new RuntimeException(e);
         }
+    }
 
-        @Override
-        public List<Dishes> getAll () {
-            List<Dishes> result = new ArrayList<>();
+    @Override
+    public List<Dishes> getAll() {
+        List<Dishes> result = new ArrayList<>();
 
-            try (Connection connection = dataSource.getConnection();
-                 Statement statement = connection.createStatement()) {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM DISHES");
-                while (resultSet.next()) {
-                    Dishes dishes = createdishes(resultSet);
-                    result.add(dishes);
-                }
-            } catch (SQLException e) {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM DISHES");
+            while (resultSet.next()) {
+                Dishes dishes = createdishes(resultSet);
+                result.add(dishes);
+            }
+        } catch (SQLException e) {
 //            LOGGER.error("Exception occurred while to DB", e);
-                throw new RuntimeException(e);
-            }
-            return result;
+            throw new RuntimeException(e);
         }
+        return result;
+    }
 
     private Dishes createdishes(ResultSet resultSet) throws SQLException {
         Dishes dishes = new Dishes();
