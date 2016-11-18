@@ -4,7 +4,8 @@ import java.util.List;
 
 public interface DishesDao {
 
-    Dishes load(int id);
-
+    Dishes addDishes(Dishes dishes);
+    void removeDishes(String name);
+    Dishes findDishesByName(String name);
     List<Dishes> getAll();
 }

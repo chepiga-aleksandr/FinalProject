@@ -17,50 +17,64 @@ public class JdbcDishesDao implements DishesDao {
     private static Logger LOGGER = LoggerFactory.getLogger(DishesDao.class);
 
     @Override
-    public Dishes addDishes(String name, int weight, int price) {
+    public Dishes addDishes(Dishes dishes) {
 
-        return null;
-    }
-
-    @Override
-    public Dishes removeDishes(String name) {
-        return null;
-    }
-
-    @Override
-    public Dishes findDishes(String name) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM DISHES WHERE name =?")) {
-            statement.setString(1, name);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return createdishes(resultSet);
-            } else {
-                throw new RuntimeException("Cannot find dishes with " + name);
-            }
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO dishes (name, weight, price) VALUES (?,?,?)")) {
+            statement.setString(1, dishes.getName());
+            statement.setInt(2, dishes.getWeight());
+            statement.setInt(3, dishes.getPrice());
+
+//            ResultSet resultSet = statement.executeQuery();
+
+//           if (resultSet.next()) {
+//                return dishes;
+//            } else {
+//                throw new RuntimeException("Не смог добавить блюдо ");
+//            }
         } catch (SQLException e) {
-            //           LOGGER.error("Exception occurred while to DB", e);
             throw new RuntimeException(e);
         }
+        return dishes;
     }
+        @Override
+        public void removeDishes (String name){
+        }
 
-    @Override
-    public List<Dishes> getAll() {
-        List<Dishes> result = new ArrayList<>();
-
-        try (Connection connection = dataSource.getConnection();
-             Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM DISHES");
-            while (resultSet.next()) {
-                Dishes dishes = createdishes(resultSet);
-                result.add(dishes);
+        @Override
+        public Dishes findDishesByName (String name){
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM DISHES WHERE name =?")) {
+                statement.setString(1, name);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    return createdishes(resultSet);
+                } else {
+                    throw new RuntimeException("Cannot findEmployeeByName dishes with " + name);
+                }
+            } catch (SQLException e) {
+                //           LOGGER.error("Exception occurred while to DB", e);
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
+        }
+
+        @Override
+        public List<Dishes> getAll () {
+            List<Dishes> result = new ArrayList<>();
+
+            try (Connection connection = dataSource.getConnection();
+                 Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM DISHES");
+                while (resultSet.next()) {
+                    Dishes dishes = createdishes(resultSet);
+                    result.add(dishes);
+                }
+            } catch (SQLException e) {
 //            LOGGER.error("Exception occurred while to DB", e);
-            throw new RuntimeException(e);
+                throw new RuntimeException(e);
+            }
+            return result;
         }
-        return result;
-    }
 
     private Dishes createdishes(ResultSet resultSet) throws SQLException {
         Dishes dishes = new Dishes();
@@ -69,6 +83,7 @@ public class JdbcDishesDao implements DishesDao {
         dishes.setPrice(resultSet.getInt("PRICE"));
         return dishes;
     }
+
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }

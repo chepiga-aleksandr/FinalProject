@@ -4,11 +4,11 @@ import java.util.List;
 
 public interface EmployeesDao {
 
-    Employees add();
+    Employees addEmployee(String name);
 
-    Employees remove();
+    void remove(String name);
 
-    Employees find();
+    Employees findEmployeeByName(String name);
 
     List<Employees> getAll();
 }

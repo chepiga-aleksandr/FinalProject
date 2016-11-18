@@ -1,11 +1,36 @@
 package ua.edu.khibs.restaurantAlex.model;
 
-public class Dishes {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "dishes")
+public class Dishes {
+    @Id
+    @Column(name = "id")
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "weight")
     private int weight;
+    @Column(name = "price")
     private int price;
+
+    public Dishes(String name, int weight, int price) {
+        this.name = name;
+        this.weight = weight;
+        this.price = price;
+    }
+
+    public Dishes() {
+
+    }
+
+//    public Dishes () {
+//
+//    }
 
     public int getId() {
         return id;
@@ -23,7 +48,9 @@ public class Dishes {
         this.name = name;
     }
 
-    public int getWeight() { return weight; }
+    public int getWeight() {
+        return weight;
+    }
 
     public void setWeight(int weight) {
         this.weight = weight;
